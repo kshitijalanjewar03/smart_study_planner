@@ -1,5 +1,4 @@
 # smart_study_planner
-# Smart Study Planner
 
 **Plan Smarter. Study Better. Achieve More.**
 
