@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Study Planner - Modern college student productivity dashboard for managing subjects, planning exams, generating smart study timetables, and tracking progress.">
+    <title>Smart Study Planner | Organize, Plan & Excel</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-theme">
+    <!-- App Container -->
+    <div class="app-layout" id="appLayout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-title">StudySmart</span>
+                        <span class="brand-badge">Pro</span>
+                    </div>
+                </div>
+                <button class="btn-icon sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Toggle sidebar">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-user-pill">
+                <div class="user-avatar" id="sidebarAvatar">AM</div>
+                <div class="user-info">
+                    <span class="user-name" id="sidebarUserName">Alex Morgan</span>
+                    <span class="user-role" id="sidebarUserRole">Computer Science</span>
+                </div>
+                <div class="streak-badge" title="Current Daily Study Streak">
+                    <i class="fa-solid fa-fire"></i>
+                    <span id="sidebarStreakCount">5d</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <span class="nav-section-label">MAIN MENU</span>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active" data-page="dashboard" id="nav-dashboard">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span class="nav-label">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#subjects" class="nav-link" data-page="subjects" id="nav-subjects">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                            <span class="nav-label">Subjects & Topics</span>
+                            <span class="nav-badge" id="navSubjectCount">5</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tasks" class="nav-link" data-page="tasks" id="nav-tasks">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span class="nav-label">Tasks & Planner</span>
+                            <span class="nav-badge count-pending" id="navPendingTaskCount">4</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#timetable" class="nav-link" data-page="timetable" id="nav-timetable">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span class="nav-label">Smart Timetable</span>
+                            <span class="nav-tag">Rule Engine</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#exams" class="nav-link" data-page="exams" id="nav-exams">
+                            <i class="fa-solid fa-stopwatch-20"></i>
+                            <span class="nav-label">Exam Countdown</span>
+                            <span class="nav-badge alert" id="navUrgentExamCount">1</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#timer" class="nav-link" data-page="timer" id="nav-timer">
+                            <i class="fa-solid fa-clock"></i>
+                            <span class="nav-label">Focus Pomodoro</span>
+                            <span class="timer-mini-indicator" id="sidebarTimerIndicator"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#analytics" class="nav-link" data-page="analytics" id="nav-analytics">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span class="nav-label">Progress Analytics</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <span class="nav-section-label">PREFERENCES</span>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#settings" class="nav-link" data-page="settings" id="nav-settings">
+                            <i class="fa-solid fa-gear"></i>
+                            <span class="nav-label">Settings & Backup</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="mini-timer-card" id="sidebarMiniTimer">
+                    <div class="mini-timer-info">
+                        <span class="mini-timer-label">Pomodoro Status</span>
+                        <span class="mini-timer-digits" id="sidebarTimerDigits">25:00</span>
+                    </div>
+                    <button class="btn-circle-action" id="sidebarQuickTimerBtn" title="Toggle Pomodoro">
+                        <i class="fa-solid fa-play" id="sidebarQuickTimerIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            
+            <!-- Top Navbar -->
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="btn-icon mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open navigation menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="globalSearchInput" placeholder="Search tasks, subjects, topics... (Ctrl+K)" autocomplete="off">
+                        <span class="search-kbd-hint">Ctrl K</span>
+                        <!-- Search dropdown results -->
+                        <div class="search-results-dropdown" id="searchResultsDropdown" hidden></div>
+                    </div>
+                </div>
+
+                <div class="navbar-right">
+                    <!-- Quick Add Button -->
+                    <button class="btn btn-primary btn-sm quick-add-btn" id="topQuickAddTaskBtn">
+                        <i class="fa-solid fa-plus"></i>
+                        <span class="btn-text">Quick Add Task</span>
+                    </button>
+
+                    <!-- Date & Time display -->
+                    <div class="navbar-datetime" id="navbarDateTime" title="Current time">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="currentDateDisplay">Today</span>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button class="btn-icon theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+                        <i class="fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <!-- User Profile Button -->
+                    <div class="profile-pill" id="navProfilePill" title="Go to Settings">
+                        <div class="user-avatar-small" id="navAvatarSmall">AM</div>
+                        <span class="profile-name" id="navStudentNameDisplay">Alex</span>
+                        <i class="fa-solid fa-angle-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Container with Pages -->
+            <main class="page-content" id="mainContent">
+
+                <!-- 1. DASHBOARD PAGE -->
+                <section class="page-view active" id="page-dashboard">
+                    <!-- Welcome Hero Banner -->
+                    <div class="dashboard-hero">
+                        <div class="hero-content">
+                            <div class="hero-badge">
+                                <i class="fa-solid fa-sparkles"></i>
+                                <span>Academic Command Center</span>
+                            </div>
+                            <h1 class="hero-greeting" id="heroGreeting">Good morning, Alex! 👋</h1>
+                            <p class="hero-subtitle">You have <strong id="heroPendingCount">4 tasks</strong> to finish today. Keep your momentum going!</p>
+                            
+                            <!-- Daily Quote -->
+                            <div class="quote-card">
+                                <i class="fa-solid fa-quote-left quote-icon"></i>
+                                <span class="quote-text" id="dailyQuoteText">"Success is the sum of small efforts, repeated day in and day out."</span>
+                                <span class="quote-author" id="dailyQuoteAuthor">— Robert Collier</span>
+                                <button class="btn-icon quote-refresh-btn" id="quoteRefreshBtn" title="Get another motivational quote">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" id="dashGenerateTimetableBtn">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Generate Today's Timetable</span>
+                            </button>
+                            <button class="btn btn-secondary" id="dashStartTimerBtn">
+                                <i class="fa-solid fa-clock"></i>
+                                <span>Start 25m Pomodoro</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KPI Statistics Row -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper bg-indigo-soft">
+                                <i class="fa-solid fa-book-open text-indigo"></i>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-label">Active Subjects</span>
+                                <h3 class="stat-value" id="kpiSubjectCount">5</h3>
+                                <span class="stat-hint" id="kpiTopicsCount">18 topics in syllabus</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper bg-amber-soft">
+                                <i class="fa-solid fa-clock-rotate-left text-amber"></i>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-label">Pending Tasks</span>
+                                <h3 class="stat-value" id="kpiPendingCount">4</h3>
+                                <span class="stat-hint" id="kpiUrgentTasksHint">2 high priority</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper bg-emerald-soft">
+                                <i class="fa-solid fa-circle-check text-emerald"></i>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-label">Completed Tasks</span>
+                                <h3 class="stat-value" id="kpiCompletedCount">12</h3>
+                                <span class="stat-hint text-emerald" id="kpiCompletionRate">75% completion</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper bg-purple-soft">
+                                <i class="fa-solid fa-bullseye text-purple"></i>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-label">Syllabus Progress</span>
+                                <h3 class="stat-value" id="kpiSyllabusProgress">68%</h3>
+                                <div class="mini-progress-bar">
+                                    <div class="progress-fill" id="kpiSyllabusFill" style="width: 68%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Main Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Left Column (60%) -->
+                        <div class="dash-col-left">
+                            
+                            <!-- Today's Priority Tasks -->
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <div class="header-title-group">
+                                        <i class="fa-solid fa-fire-flame-curved text-amber"></i>
+                                        <h2>Today's Priorities</h2>
+                                        <span class="badge badge-pill badge-primary" id="dashPriorityTaskBadge">3 Tasks</span>
+                                    </div>
+                                    <div class="header-actions">
+                                        <button class="btn btn-sm btn-ghost" id="dashViewAllTasksBtn">View All</button>
+                                        <button class="btn btn-sm btn-primary" id="dashAddTaskBtn">
+                                            <i class="fa-solid fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="task-list" id="dashPriorityTaskList">
+                                        <!-- Dynamically injected tasks -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Weekly Study Progress Chart -->
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <div class="header-title-group">
+                                        <i class="fa-solid fa-chart-column text-indigo"></i>
+                                        <h2>Weekly Study Progress</h2>
+                                    </div>
+                                    <span class="header-subtext" id="dashChartSummary">Target: 4h / day</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container" style="position: relative; height: 240px;">
+                                        <canvas id="dashWeeklyChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Right Column (40%) -->
+                        <div class="dash-col-right">
+                            
+                            <!-- Upcoming Exam Countdowns -->
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <div class="header-title-group">
+                                        <i class="fa-solid fa-stopwatch text-danger"></i>
+                                        <h2>Exam Countdowns</h2>
+                                    </div>
+                                    <button class="btn btn-sm btn-ghost" id="dashViewAllExamsBtn">Manage</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="countdown-list" id="dashExamList">
+                                        <!-- Injected countdown cards -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Today's Study Schedule Timeline -->
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <div class="header-title-group">
+                                        <i class="fa-solid fa-calendar-day text-purple"></i>
+                                        <h2>Today's Schedule</h2>
+                                    </div>
+                                    <button class="btn btn-sm btn-ghost" id="dashOpenTimetableBtn">Timetable</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="schedule-timeline" id="dashTodayTimeline">
+                                        <!-- Injected schedule items -->
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 2. SUBJECTS PAGE -->
+                <section class="page-view" id="page-subjects">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Subject Management</h1>
+                            <p class="page-subtitle">Track your courses, organize topics, and monitor syllabus completion.</p>
+                        </div>
+                        <div class="header-buttons">
+                            <button class="btn btn-primary" id="openAddSubjectModalBtn">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add New Subject</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Subject Filters & Controls -->
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <i class="fa-solid fa-filter text-muted"></i>
+                            <span class="filter-label">Filter:</span>
+                            <button class="filter-chip active" data-subject-filter="all">All Subjects (<span id="filterAllCount">0</span>)</button>
+                            <button class="filter-chip" data-subject-filter="in-progress">In Progress</button>
+                            <button class="filter-chip" data-subject-filter="completed">Completed</button>
+                        </div>
+                        <div class="filter-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="subjectSearchInput" placeholder="Filter subjects by name or code...">
+                        </div>
+                    </div>
+
+                    <!-- Subjects Grid -->
+                    <div class="subjects-grid" id="subjectsGrid">
+                        <!-- Dynamically populated subjects -->
+                    </div>
+
+                    <!-- Empty state if no subjects -->
+                    <div class="empty-state" id="subjectsEmptyState" hidden>
+                        <div class="empty-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+                        <h3>No subjects found</h3>
+                        <p>Get started by adding your college courses and syllabus topics.</p>
+                        <button class="btn btn-primary" id="emptyAddSubjectBtn">Add Your First Subject</button>
+                    </div>
+                </section>
+
+
+                <!-- 3. TASKS & STUDY PLANNER PAGE -->
+                <section class="page-view" id="page-tasks">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Task & Study Planner</h1>
+                            <p class="page-subtitle">Schedule study blocks, track deadlines, and organize your daily work.</p>
+                        </div>
+                        <div class="header-buttons">
+                            <button class="btn btn-secondary" id="exportTasksCsvBtn" title="Export tasks as CSV">
+                                <i class="fa-solid fa-file-csv"></i>
+                                <span>Export CSV</span>
+                            </button>
+                            <button class="btn btn-primary" id="openAddTaskModalBtn">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add New Task</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Planner View Switcher & Filters -->
+                    <div class="planner-controls-card">
+                        <div class="controls-top-row">
+                            <!-- View Toggle (List, Board, Agenda) -->
+                            <div class="view-toggle-group">
+                                <button class="view-toggle-btn active" data-task-view="list" id="taskViewListBtn">
+                                    <i class="fa-solid fa-list-ul"></i> List View
+                                </button>
+                                <button class="view-toggle-btn" data-task-view="board" id="taskViewBoardBtn">
+                                    <i class="fa-solid fa-columns"></i> Kanban Board
+                                </button>
+                                <button class="view-toggle-btn" data-task-view="agenda" id="taskViewAgendaBtn">
+                                    <i class="fa-solid fa-calendar-week"></i> Daily Agenda
+                                </button>
+                            </div>
+
+                            <!-- Search -->
+                            <div class="task-search-wrapper">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="taskSearchInput" placeholder="Search tasks...">
+                            </div>
+                        </div>
+
+                        <div class="controls-filter-row">
+                            <!-- Subject Filter -->
+                            <div class="select-wrapper">
+                                <select id="taskFilterSubject">
+                                    <option value="all">All Subjects</option>
+                                    <!-- Options injected -->
+                                </select>
+                            </div>
+
+                            <!-- Priority Filter -->
+                            <div class="select-wrapper">
+                                <select id="taskFilterPriority">
+                                    <option value="all">All Priorities</option>
+                                    <option value="High">High Priority</option>
+                                    <option value="Medium">Medium Priority</option>
+                                    <option value="Low">Low Priority</option>
+                                </select>
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div class="select-wrapper">
+                                <select id="taskFilterStatus">
+                                    <option value="all">All Statuses</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+
+                            <!-- Date Filter -->
+                            <div class="select-wrapper">
+                                <select id="taskFilterDate">
+                                    <option value="all">All Dates</option>
+                                    <option value="today">Due Today</option>
+                                    <option value="tomorrow">Due Tomorrow</option>
+                                    <option value="week">Due This Week</option>
+                                    <option value="overdue">Overdue</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-ghost btn-sm" id="resetTaskFiltersBtn">Reset Filters</button>
+                        </div>
+                    </div>
+
+                    <!-- View Container 1: LIST VIEW -->
+                    <div class="planner-view-pane active" id="pane-list-view">
+                        <div class="tasks-table-wrapper">
+                            <table class="tasks-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 44px;">Done</th>
+                                        <th>Task Name & Subject</th>
+                                        <th>Scheduled Date & Time</th>
+                                        <th>Duration</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th style="width: 140px; text-align: right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tasksTableBody">
+                                    <!-- Injected task rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="tasksEmptyState" hidden>
+                            <div class="empty-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <h3>No tasks match your filters</h3>
+                            <p>Try resetting your filters or add a new study task.</p>
+                        </div>
+                    </div>
+
+                    <!-- View Container 2: KANBAN BOARD VIEW -->
+                    <div class="planner-view-pane" id="pane-board-view" hidden>
+                        <div class="kanban-grid">
+                            <!-- Pending Column -->
+                            <div class="kanban-column" data-status="Pending">
+                                <div class="kanban-col-header">
+                                    <div class="col-title">
+                                        <span class="status-dot dot-amber"></span>
+                                        <h3>To Do / Pending</h3>
+                                    </div>
+                                    <span class="col-count" id="kanbanPendingCount">0</span>
+                                </div>
+                                <div class="kanban-cards-list" id="kanbanPendingList">
+                                    <!-- Injected -->
+                                </div>
+                            </div>
+
+                            <!-- In Progress Column -->
+                            <div class="kanban-column" data-status="In Progress">
+                                <div class="kanban-col-header">
+                                    <div class="col-title">
+                                        <span class="status-dot dot-blue"></span>
+                                        <h3>In Progress</h3>
+                                    </div>
+                                    <span class="col-count" id="kanbanProgressCount">0</span>
+                                </div>
+                                <div class="kanban-cards-list" id="kanbanProgressList">
+                                    <!-- Injected -->
+                                </div>
+                            </div>
+
+                            <!-- Completed Column -->
+                            <div class="kanban-column" data-status="Completed">
+                                <div class="kanban-col-header">
+                                    <div class="col-title">
+                                        <span class="status-dot dot-emerald"></span>
+                                        <h3>Completed</h3>
+                                    </div>
+                                    <span class="col-count" id="kanbanCompletedCount">0</span>
+                                </div>
+                                <div class="kanban-cards-list" id="kanbanCompletedList">
+                                    <!-- Injected -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- View Container 3: AGENDA / TIMELINE VIEW -->
+                    <div class="planner-view-pane" id="pane-agenda-view" hidden>
+                        <div class="agenda-container" id="agendaTimeline">
+                            <!-- Injected agenda days and blocks -->
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 4. SMART TIMETABLE GENERATOR PAGE -->
+                <section class="page-view" id="page-timetable">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Smart Timetable Generator</h1>
+                            <p class="page-subtitle">Algorithmic study schedule optimizer based on upcoming exams, subject priorities, and syllabus deficits.</p>
+                        </div>
+                    </div>
+
+                    <!-- Engine Notice Banner -->
+                    <div class="info-callout">
+                        <div class="callout-icon"><i class="fa-solid fa-microchip"></i></div>
+                        <div class="callout-text">
+                            <strong>Transparent Rule-Based Scheduling:</strong>
+                            This timetable is generated using deterministic constraint-satisfaction algorithms, not black-box artificial intelligence. It computes urgency weights using days-until-exam, subject priority, and topic deficits to allocate realistic, non-overlapping study intervals with mandatory recuperation breaks.
+                        </div>
+                    </div>
+
+                    <div class="timetable-layout">
+                        <!-- Generator Config Form -->
+                        <div class="timetable-config-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-sliders text-indigo"></i> Schedule Parameters</h3>
+                            </div>
+                            <form id="timetableGeneratorForm" class="config-form">
+                                <div class="form-group">
+                                    <label for="ttStudyHours">
+                                        Available Study Time Today:
+                                        <strong id="ttHoursDisplay" class="text-primary">4 hours</strong>
+                                    </label>
+                                    <input type="range" id="ttStudyHours" min="1" max="10" step="0.5" value="4" class="slider-input">
+                                    <div class="slider-marks">
+                                        <span>1h</span>
+                                        <span>4h</span>
+                                        <span>7h</span>
+                                        <span>10h</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="ttStartTime">Start Study Time</label>
+                                        <input type="time" id="ttStartTime" value="16:00" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ttSessionDuration">Session Length</label>
+                                        <select id="ttSessionDuration">
+                                            <option value="30">30 minutes</option>
+                                            <option value="45" selected>45 minutes (Optimal)</option>
+                                            <option value="50">50 minutes</option>
+                                            <option value="60">60 minutes</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="ttBreakDuration">Break Interval</label>
+                                        <select id="ttBreakDuration">
+                                            <option value="5">5 minutes</option>
+                                            <option value="10" selected>10 minutes</option>
+                                            <option value="15">15 minutes</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ttStrategy">Priority Weighting</label>
+                                        <select id="ttStrategy">
+                                            <option value="balanced">Balanced (Exams + Priority)</option>
+                                            <option value="exam_sprint">Exam Sprint (Closest Exams First)</option>
+                                            <option value="syllabus_deficit">Catch-up (Lowest Completion)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Included Subjects</label>
+                                    <div class="subject-checkbox-list" id="ttSubjectCheckboxes">
+                                        <!-- Injected checkboxes for active subjects -->
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block" id="generateTimetableSubmitBtn">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    <span>Generate Smart Timetable</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Generated Schedule Output -->
+                        <div class="timetable-result-card">
+                            <div class="card-header">
+                                <div class="header-title-group">
+                                    <i class="fa-solid fa-calendar-check text-emerald"></i>
+                                    <h3>Generated Study Schedule</h3>
+                                    <span class="badge badge-primary" id="ttScheduleSummaryBadge">4 Sessions Planned</span>
+                                </div>
+                                <div class="header-actions">
+                                    <button class="btn btn-sm btn-secondary" id="saveTimetableToTasksBtn" title="Add all generated sessions as study tasks">
+                                        <i class="fa-solid fa-calendar-plus"></i> Save to Tasks
+                                    </button>
+                                    <button class="btn btn-sm btn-ghost" id="exportTimetableCsvBtn" title="Export schedule as CSV">
+                                        <i class="fa-solid fa-file-csv"></i> CSV
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="timetable-metrics-banner" id="ttMetricsBanner">
+                                    <div class="tt-metric">
+                                        <span class="label">Total Study Time</span>
+                                        <strong id="ttTotalStudyTime">3h 00m</strong>
+                                    </div>
+                                    <div class="tt-metric">
+                                        <span class="label">Total Breaks</span>
+                                        <strong id="ttTotalBreakTime">40m</strong>
+                                    </div>
+                                    <div class="tt-metric">
+                                        <span class="label">Finish Time</span>
+                                        <strong id="ttFinishTime">7:40 PM</strong>
+                                    </div>
+                                </div>
+
+                                <div class="generated-timeline" id="generatedTimelineList">
+                                    <!-- Injected timeline blocks -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 5. EXAM COUNTDOWN PAGE -->
+                <section class="page-view" id="page-exams">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Exam Management & Countdown</h1>
+                            <p class="page-subtitle">Track important exam dates, monitor remaining days, and prioritize syllabus coverage.</p>
+                        </div>
+                        <div class="header-buttons">
+                            <button class="btn btn-primary" id="openAddExamModalBtn">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add New Exam</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Exams List / Grid -->
+                    <div class="exams-grid" id="examsGrid">
+                        <!-- Injected exam cards -->
+                    </div>
+
+                    <!-- Empty state -->
+                    <div class="empty-state" id="examsEmptyState" hidden>
+                        <div class="empty-icon"><i class="fa-solid fa-stopwatch-20"></i></div>
+                        <h3>No upcoming exams registered</h3>
+                        <p>Add your midterms, finals, or quizzes to stay on track.</p>
+                        <button class="btn btn-primary" id="emptyAddExamBtn">Add Your First Exam</button>
+                    </div>
+                </section>
+
+
+                <!-- 6. FOCUS POMODORO TIMER PAGE -->
+                <section class="page-view" id="page-timer">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Focus Pomodoro Timer</h1>
+                            <p class="page-subtitle">Boost concentration with science-backed 25-minute study intervals and structured breaks.</p>
+                        </div>
+                        <div class="header-buttons">
+                            <button class="btn btn-ghost" id="timerSoundToggleBtn" title="Toggle audio chime">
+                                <i class="fa-solid fa-volume-high" id="timerSoundIcon"></i>
+                                <span id="timerSoundStatusText">Sound On</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="timer-wrapper">
+                        <!-- Mode Selector Tabs -->
+                        <div class="timer-mode-tabs">
+                            <button class="timer-tab-btn active" data-timer-mode="focus">
+                                <i class="fa-solid fa-brain"></i> Focus (25m)
+                            </button>
+                            <button class="timer-tab-btn" data-timer-mode="short-break">
+                                <i class="fa-solid fa-mug-hot"></i> Short Break (5m)
+                            </button>
+                            <button class="timer-tab-btn" data-timer-mode="long-break">
+                                <i class="fa-solid fa-couch"></i> Long Break (15m)
+                            </button>
+                        </div>
+
+                        <!-- Current Focus Target Selector -->
+                        <div class="timer-task-selector-card">
+                            <div class="selector-label">
+                                <i class="fa-solid fa-crosshairs text-indigo"></i>
+                                <span>I am currently focusing on:</span>
+                            </div>
+                            <div class="selector-inputs">
+                                <select id="timerSubjectSelect">
+                                    <option value="">Select a Subject (Optional)</option>
+                                    <!-- Injected -->
+                                </select>
+                                <select id="timerTaskSelect">
+                                    <option value="">Link to a Task (Optional)</option>
+                                    <!-- Injected -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Circular Timer Display -->
+                        <div class="timer-display-card">
+                            <div class="circular-timer-container">
+                                <svg class="progress-ring" width="280" height="280" viewBox="0 0 280 280">
+                                    <circle class="progress-ring-bg" stroke="var(--border-color)" stroke-width="12" fill="transparent" r="120" cx="140" cy="140" />
+                                    <circle class="progress-ring-circle" id="timerProgressRing" stroke="var(--primary-color)" stroke-width="12" stroke-linecap="round" fill="transparent" r="120" cx="140" cy="140" />
+                                </svg>
+                                <div class="timer-inner-content">
+                                    <span class="timer-mode-label" id="timerModeLabel">FOCUS SESSION</span>
+                                    <h2 class="timer-digits" id="timerBigDigits">25:00</h2>
+                                    <span class="timer-current-task-name" id="timerCurrentTaskDisplay">Deep Study</span>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="timer-controls">
+                                <button class="btn-timer-circle btn-reset" id="timerResetBtn" title="Reset timer">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </button>
+                                <button class="btn-timer-primary" id="timerMainToggleBtn">
+                                    <i class="fa-solid fa-play" id="timerMainIcon"></i>
+                                    <span id="timerMainBtnText">Start Focus</span>
+                                </button>
+                                <button class="btn-timer-circle btn-skip" id="timerSkipBtn" title="Skip to next session">
+                                    <i class="fa-solid fa-forward-step"></i>
+                                </button>
+                            </div>
+
+                            <!-- Cycle Indicators (4 cycles to long break) -->
+                            <div class="timer-cycle-wrapper">
+                                <span class="cycle-text">Pomodoro Cycle:</span>
+                                <div class="cycle-dots" id="timerCycleDots">
+                                    <span class="cycle-dot completed"></span>
+                                    <span class="cycle-dot active"></span>
+                                    <span class="cycle-dot"></span>
+                                    <span class="cycle-dot"></span>
+                                </div>
+                                <span class="cycle-counter" id="timerCompletedSessionsCount">1 of 4 completed</span>
+                            </div>
+                        </div>
+
+                        <!-- Timer Stats Banner -->
+                        <div class="timer-stats-banner">
+                            <div class="timer-stat-box">
+                                <span class="stat-number" id="timerTodaySessionsTotal">3</span>
+                                <span class="stat-desc">Sessions Completed Today</span>
+                            </div>
+                            <div class="timer-stat-box">
+                                <span class="stat-number" id="timerTodayMinutesTotal">75m</span>
+                                <span class="stat-desc">Deep Focus Time Logged</span>
+                            </div>
+                            <div class="timer-stat-box">
+                                <span class="stat-number" id="timerGoalProgressPercent">62%</span>
+                                <span class="stat-desc">Of Daily Goal (2h / 4h)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 7. PROGRESS ANALYTICS PAGE -->
+                <section class="page-view" id="page-analytics">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Progress Analytics & Study Insights</h1>
+                            <p class="page-subtitle">Visual feedback on syllabus completion, study time trends, and productivity metrics.</p>
+                        </div>
+                        <div class="header-buttons">
+                            <button class="btn btn-secondary" id="exportAnalyticsCsvBtn">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Export Study Log CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Top Metrics Grid -->
+                    <div class="analytics-metrics-grid">
+                        <div class="analytics-stat-card">
+                            <div class="icon-bubble bg-indigo-soft text-indigo"><i class="fa-solid fa-clock"></i></div>
+                            <div class="data">
+                                <span class="label">Total Study Time</span>
+                                <h3 id="analyticsTotalStudyHours">24.5 hrs</h3>
+                                <span class="sub" id="analyticsThisWeekHours">14.0 hrs this week</span>
+                            </div>
+                        </div>
+
+                        <div class="analytics-stat-card">
+                            <div class="icon-bubble bg-emerald-soft text-emerald"><i class="fa-solid fa-check-double"></i></div>
+                            <div class="data">
+                                <span class="label">Task Completion</span>
+                                <h3 id="analyticsTaskCompletionRate">75%</h3>
+                                <span class="sub" id="analyticsTaskCountSummary">12 of 16 tasks done</span>
+                            </div>
+                        </div>
+
+                        <div class="analytics-stat-card">
+                            <div class="icon-bubble bg-purple-soft text-purple"><i class="fa-solid fa-brain"></i></div>
+                            <div class="data">
+                                <span class="label">Focus Sessions</span>
+                                <h3 id="analyticsTotalPomodoros">28</h3>
+                                <span class="sub" id="analyticsAvgDuration">25m avg length</span>
+                            </div>
+                        </div>
+
+                        <div class="analytics-stat-card">
+                            <div class="icon-bubble bg-amber-soft text-amber"><i class="fa-solid fa-fire"></i></div>
+                            <div class="data">
+                                <span class="label">Current Streak</span>
+                                <h3 id="analyticsStudyStreak">5 Days</h3>
+                                <span class="sub">Best: 12 days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="analytics-charts-grid">
+                        <!-- Chart 1: Study Hours per Day vs Goal -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="header-title-group">
+                                    <i class="fa-solid fa-chart-line text-indigo"></i>
+                                    <h3>Weekly Study Hours vs Daily Goal</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height: 280px;">
+                                    <canvas id="chartWeeklyHours"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Task Status Distribution -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="header-title-group">
+                                    <i class="fa-solid fa-chart-pie text-emerald"></i>
+                                    <h3>Task Status Breakdown</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height: 280px;">
+                                    <canvas id="chartTaskStatus"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart 3: Subject Syllabus Completion -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="header-title-group">
+                                    <i class="fa-solid fa-chart-bar text-purple"></i>
+                                    <h3>Subject Syllabus Completion Rate (%)</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height: 280px;">
+                                    <canvas id="chartSubjectCompletion"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart 4: Focus Time Distribution by Subject -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="header-title-group">
+                                    <i class="fa-solid fa-stopwatch text-amber"></i>
+                                    <h3>Study Hours by Subject</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height: 280px;">
+                                    <canvas id="chartSubjectDistribution"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Study Sessions Log Table -->
+                    <div class="content-card mt-4">
+                        <div class="card-header">
+                            <div class="header-title-group">
+                                <i class="fa-solid fa-history text-muted"></i>
+                                <h3>Completed Study Sessions History</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="study-log-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date & Time</th>
+                                            <th>Subject</th>
+                                            <th>Session Name / Focus Topic</th>
+                                            <th>Duration</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="analyticsSessionsLogBody">
+                                        <!-- Injected session logs -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 8. SETTINGS & DATA BACKUP PAGE -->
+                <section class="page-view" id="page-settings">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Settings & Data Management</h1>
+                            <p class="page-subtitle">Configure your profile, daily goals, timer preferences, and manage localStorage data.</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-grid">
+                        <!-- Profile & Goals -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-user-graduate text-indigo"></i> Student Profile & Goals</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="settingsProfileForm">
+                                    <div class="form-group">
+                                        <label for="setStudentName">Display Name</label>
+                                        <input type="text" id="setStudentName" value="Alex Morgan" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="setUserMajor">Field of Study / Major</label>
+                                        <input type="text" id="setUserMajor" value="Computer Science & Engineering">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="setDailyGoal">Daily Study Goal (Hours)</label>
+                                        <input type="number" id="setDailyGoal" min="1" max="16" step="0.5" value="4" required>
+                                        <span class="field-hint">Used to calculate daily productivity charts and progress gauges.</span>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Profile Settings</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Timer Preferences -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-sliders text-purple"></i> Pomodoro Timer Preferences</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="settingsTimerForm">
+                                    <div class="form-group">
+                                        <label for="setFocusDuration">Focus Session Duration (minutes)</label>
+                                        <input type="number" id="setFocusDuration" min="5" max="90" value="25" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="setShortBreak">Short Break Duration (minutes)</label>
+                                        <input type="number" id="setShortBreak" min="1" max="30" value="5" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="setLongBreak">Long Break Duration (minutes)</label>
+                                        <input type="number" id="setLongBreak" min="5" max="60" value="15" required>
+                                    </div>
+                                    <div class="form-checkbox-group">
+                                        <input type="checkbox" id="setSoundEnabled" checked>
+                                        <label for="setSoundEnabled">Play synthesized chime on session completion</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Timer Preferences</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Data Management & Backups (Full width) -->
+                        <div class="content-card full-width">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-database text-emerald"></i> Data Persistence & Backup</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-4">All your subjects, tasks, exams, and study logs are stored locally in your browser's <code>localStorage</code>. No remote server is required.</p>
+                                
+                                <div class="backup-actions-grid">
+                                    <div class="backup-action-box">
+                                        <div class="action-icon"><i class="fa-solid fa-file-export text-indigo"></i></div>
+                                        <h4>Export Backup (JSON)</h4>
+                                        <p>Download a complete JSON snapshot of all your planner data.</p>
+                                        <button class="btn btn-secondary btn-sm" id="btnExportJson">
+                                            <i class="fa-solid fa-download"></i> Download Backup
+                                        </button>
+                                    </div>
+
+                                    <div class="backup-action-box">
+                                        <div class="action-icon"><i class="fa-solid fa-file-import text-purple"></i></div>
+                                        <h4>Restore Backup (JSON)</h4>
+                                        <p>Upload a previously exported JSON backup file.</p>
+                                        <label class="btn btn-secondary btn-sm btn-file-upload">
+                                            <i class="fa-solid fa-upload"></i> Choose File
+                                            <input type="file" id="btnImportJson" accept=".json" style="display:none;">
+                                        </label>
+                                    </div>
+
+                                    <div class="backup-action-box">
+                                        <div class="action-icon"><i class="fa-solid fa-rotate text-amber"></i></div>
+                                        <h4>Reset Demo Sample Data</h4>
+                                        <p>Restore the rich sample subjects, tasks, exams, and logs.</p>
+                                        <button class="btn btn-secondary btn-sm" id="btnResetDemoData">
+                                            <i class="fa-solid fa-arrow-rotate-right"></i> Reset to Sample Data
+                                        </button>
+                                    </div>
+
+                                    <div class="backup-action-box danger-box">
+                                        <div class="action-icon"><i class="fa-solid fa-trash-can text-danger"></i></div>
+                                        <h4>Clear All Data</h4>
+                                        <p>Delete all stored records and start completely blank.</p>
+                                        <button class="btn btn-danger btn-sm" id="btnClearAllData">
+                                            <i class="fa-solid fa-trash-can"></i> Clear All Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- Modal 1: Add / Edit Subject -->
+    <div class="modal-backdrop" id="subjectModal" hidden>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="subjectModalTitle"><i class="fa-solid fa-book-bookmark text-indigo"></i> Add New Subject</h3>
+                <button class="btn-icon modal-close-btn" data-close-modal="subjectModal">&times;</button>
+            </div>
+            <form id="subjectForm">
+                <input type="hidden" id="subjectFormId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="subName">Subject Name <span class="required">*</span></label>
+                            <input type="text" id="subName" placeholder="e.g. Data Structures & Algorithms" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subCode">Course Code</label>
+                            <input type="text" id="subCode" placeholder="e.g. CS201">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="subColor">Subject Color Accent</label>
+                            <div class="color-picker-row">
+                                <input type="color" id="subColor" value="#6366f1" class="color-picker-input">
+                                <div class="color-presets" id="subjectColorPresets">
+                                    <span class="color-swatch" data-color="#6366f1" style="background:#6366f1"></span>
+                                    <span class="color-swatch" data-color="#8b5cf6" style="background:#8b5cf6"></span>
+                                    <span class="color-swatch" data-color="#06b6d4" style="background:#06b6d4"></span>
+                                    <span class="color-swatch" data-color="#10b981" style="background:#10b981"></span>
+                                    <span class="color-swatch" data-color="#f59e0b" style="background:#f59e0b"></span>
+                                    <span class="color-swatch" data-color="#ec4899" style="background:#ec4899"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="subCredits">Credits / Target Grade</label>
+                            <input type="text" id="subCredits" placeholder="e.g. 4 Credits (Target: A)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subExamDate">Target / Final Exam Date</label>
+                        <input type="date" id="subExamDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subTopicsInput">Syllabus Topics (One per line)</label>
+                        <textarea id="subTopicsInput" rows="4" placeholder="Binary Search Trees&#10;Graph Traversals (BFS & DFS)&#10;Dijkstra's Algorithm&#10;Dynamic Programming"></textarea>
+                        <span class="field-hint">You can also manage and mark individual topics inside the subject card.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-close-modal="subjectModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveSubjectSubmitBtn">Save Subject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal 2: Add / Edit Task -->
+    <div class="modal-backdrop" id="taskModal" hidden>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="taskModalTitle"><i class="fa-solid fa-list-check text-indigo"></i> Add Study Task</h3>
+                <button class="btn-icon modal-close-btn" data-close-modal="taskModal">&times;</button>
+            </div>
+            <form id="taskForm">
+                <input type="hidden" id="taskFormId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title <span class="required">*</span></label>
+                        <input type="text" id="taskTitle" placeholder="e.g. Solve 5 Dynamic Programming problems" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDescription">Description / Notes</label>
+                        <textarea id="taskDescription" rows="2" placeholder="e.g. Focus on memoization table formulation and time complexity analysis."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskSubject">Related Subject <span class="required">*</span></label>
+                            <select id="taskSubject" required>
+                                <option value="">Select a Subject</option>
+                                <!-- Injected -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskPriority">Priority Level</label>
+                            <select id="taskPriority">
+                                <option value="High">🔥 High Priority</option>
+                                <option value="Medium" selected>⚡ Medium Priority</option>
+                                <option value="Low">🌱 Low Priority</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskDate">Scheduled Date <span class="required">*</span></label>
+                            <input type="date" id="taskDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskStartTime">Start Time</label>
+                            <input type="time" id="taskStartTime" value="16:00">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskDuration">Estimated Duration (Minutes) <span class="required">*</span></label>
+                            <input type="number" id="taskDuration" min="5" max="480" step="5" value="45" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskStatus">Status</label>
+                            <select id="taskStatus">
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-close-modal="taskModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveTaskSubmitBtn">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal 3: Add / Edit Exam -->
+    <div class="modal-backdrop" id="examModal" hidden>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="examModalTitle"><i class="fa-solid fa-stopwatch text-indigo"></i> Add Exam Countdown</h3>
+                <button class="btn-icon modal-close-btn" data-close-modal="examModal">&times;</button>
+            </div>
+            <form id="examForm">
+                <input type="hidden" id="examFormId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="examTitle">Exam Title <span class="required">*</span></label>
+                        <input type="text" id="examTitle" placeholder="e.g. Midterm 1 - Algorithms & Data Structures" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examSubject">Subject <span class="required">*</span></label>
+                            <select id="examSubject" required>
+                                <option value="">Select a Subject</option>
+                                <!-- Injected -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="examWeightage">Weightage (% of grade)</label>
+                            <input type="text" id="examWeightage" placeholder="e.g. 35%">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="examDate">Exam Date <span class="required">*</span></label>
+                            <input type="date" id="examDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="examTime">Exam Time</label>
+                            <input type="time" id="examTime" value="09:00">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examLocation">Location / Room</label>
+                        <input type="text" id="examLocation" placeholder="e.g. Science Hall 302 / Online">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examTopics">Syllabus Topics to Cover (One per line)</label>
+                        <textarea id="examTopics" rows="3" placeholder="Sorting algorithms&#10;Trees and Heaps&#10;Graph traversals"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-close-modal="examModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveExamSubmitBtn">Save Exam</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal 4: Generic Confirmation Dialog -->
+    <div class="modal-backdrop" id="confirmModal" hidden>
+        <div class="modal-dialog modal-dialog-sm">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle"><i class="fa-solid fa-triangle-exclamation text-danger"></i> Are you sure?</h3>
+                <button class="btn-icon modal-close-btn" data-close-modal="confirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" id="confirmModalCancelBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmModalConfirmBtn">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <!-- Application JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
